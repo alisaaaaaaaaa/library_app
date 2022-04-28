@@ -7,29 +7,78 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
+
 
 namespace library_app
 {
     public partial class LibraryApp : Form
     {
+
         List<Book> ListOfBooks = new List<Book>();
+        List<Reader> readers = new List<Reader>();
+        Book Checked_Book;
+
+        SqlConnection sqlConnection = new SqlConnection(@"Server=localhost; Database=Books; Integrated Security=SSPI");
         public LibraryApp()
         {
             InitializeComponent();
             this.WindowState = FormWindowState.Maximized;
-            //пример:
-            Image Img = Image.FromFile("WandP.jpg");
-            Book Book1 = new Book("Война и мир", "Тослой Л.Н.", Img, "Интересная книга", eBookCond.available);
-            ListOfBooks.Add(Book1);
-            Bookshelf(Book1, cover1, title1);
-            //считать из бд названия и обложки книг и записать в список
-            coverClick(cover1);
-            FilterClick();
+            try
+            {
+                sqlConnection.Open();
+
+                SqlCommand myQuery = new SqlCommand("SELECT * FROM Books.dbo.BookInfo_new;", sqlConnection);
+
+                SqlDataReader myReader = myQuery.ExecuteReader();
+
+
+                myReader.Read();
+
+
+                if (myReader.HasRows)
+                {
+
+                    int Id = 0;
+                    while (myReader.Read())//Запись книг
+                    {
+                        string Book_Title = myReader["Book_title"].ToString();
+                        string Author = myReader["Author"].ToString();
+                        string Description = myReader["Description"].ToString();
+                        string Genre = myReader["Genre"].ToString();
+                        Image image = Image.FromStream(myReader.GetStream(5));
+                        Book book = new Book(Id, Book_Title, Author, image, Description, Genre, eBookCond.available);
+                        ListOfBooks.Add(book);
+                        switch (Id)
+                        {
+                            case 0: Bookshelf(book, cover1, title1); coverMouseEnter(cover1); break;
+                            case 1: Bookshelf(book, cover2, title2); coverMouseEnter(cover2); break;
+                            case 2: Bookshelf(book, cover3, title3); coverMouseEnter(cover3); break;
+                            case 3: Bookshelf(book, cover4, title4); coverMouseEnter(cover4); break;
+                            case 4: Bookshelf(book, cover5, title5); coverMouseEnter(cover5); break;
+                            case 5: Bookshelf(book, cover6, title6); coverMouseEnter(cover6); break;
+                            case 6: Bookshelf(book, cover7, title7); coverMouseEnter(cover7); break;
+                            case 7: Bookshelf(book, cover8, title8); coverMouseEnter(cover8); break;
+                            case 8: Bookshelf(book, cover9, title9); coverMouseEnter(cover9); break;
+                        }
+                        Id++;
+                        FilterClick();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
         }
         private void Bookshelf(Book book, PictureBox pBoxBookShelf, RichTextBox rTBoxBookShelf)//метод добавления книги в книжную полку
         {
             pBoxBookShelf.Image = book.Cover;
-            rTBoxBookShelf.Text = book.Title + book.Author;
+            rTBoxBookShelf.Text = book.Title + "  -  " + book.Author;
             book.pBoxBookShelf = pBoxBookShelf;
             book.rTBoxBookShelf = rTBoxBookShelf;
         }
@@ -40,91 +89,211 @@ namespace library_app
                 if (Book.pBoxBookShelf == pBoxBookShelf)
                     return Book;
             }
-                return null;
+            return null;
         }
         private void applybutton_Click(object sender, EventArgs e)
         {
-
-            if (numbertextbox.Text.Equals("") || timetextbox.Text.Equals(""))
+            if (numbertextbox.Text.Equals("") || timetextbox.Text.Equals("") || Checked_Book == null)
             {
                 MessageBox.Show("Введите все данные!");
             }
             else if (Convert.ToInt32(timetextbox.Text) >= 7 && Convert.ToInt32(timetextbox.Text) <= 60)
             {
-                MessageBox.Show("Заявка уcпешно принята!");
+                bool is_find = false;//есть ли пользователь в списке прошлых пользователей
+                int index = Checked_Book.ID;
+                if (readers.Count == 0)
+                {
+                    readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
+                    ListOfBooks[index].BookCond = eBookCond.busy;
+                    Set_book_status(ListOfBooks[index].BookCond);
+                    MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                }
+                else
+                {
+                    for (int i = 0; i < readers.Count; i++)
+                    {
+                        if (numbertextbox.Text == readers[i].ID_reader)
+                        {
+                            is_find = true;
+                            if (readers[i].is_ok )
+                            {
+                                if (ListOfBooks[index].BookCond == eBookCond.available)
+                                {
+                                    ListOfBooks[index].BookCond = eBookCond.busy;
+                                    Set_book_status(ListOfBooks[index].BookCond);
+                                    readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
+                                    MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                                    break;
+                                }
+                                else 
+                                {
+                                    MessageBox.Show("Книга недоступна");
+                                    break;
+                                }
+                               
+                            }
+                            else
+                            {
+                                MessageBox.Show("У вас просрочена книга");
+                                break;
+                            }
+                        }
+                    }
+                    if(!is_find)
+                    {
+                        if(Checked_Book.BookCond == eBookCond.available)
+                        {
+                            readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
+                            ListOfBooks[index].BookCond = eBookCond.busy;
+                            Set_book_status(ListOfBooks[index].BookCond);
+                            MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                        }
+                       else
+                       {
+                            MessageBox.Show("Книга недоступна");
+                       }
+                    }
 
+
+                }
+           
             }
             else if (Convert.ToInt32(timetextbox.Text) < 7 || Convert.ToInt32(timetextbox.Text) > 60)
             {
                 MessageBox.Show("Введеный срок не соотвествует указанному диапазону!");
             }
+            
         }
-        public void coverClick(PictureBox cover)//метод для того, чтобы при нажатии слева появлялась брошюра
+        public void coverMouseEnter(PictureBox cover)//метод для того, чтобы при нажатии слева появлялась брошюра
         {
+            var Book = GetBookByBookShelf(cover);
             bigcover.Image = cover.Image;
-            description.Text = GetBookByBookShelf(cover).rTBoxBookShelf.Text;
-            availablebutton.Checked = GetBookByBookShelf(cover).BookCond.Equals("available");
-            busybutton.Checked = GetBookByBookShelf(cover).BookCond.Equals("busy");
-            comingsoonbutton.Checked = GetBookByBookShelf(cover).BookCond.Equals("comingsoon");
-            unavailablebutton.Checked = GetBookByBookShelf(cover).BookCond.Equals("unavailable");
+            description.Text = Book.Description;
+            Set_book_status(Book.BookCond);
+            string str = "";
+            foreach (var b in ListOfBooks)
+            {
+               if( !Book.ID.Equals(b.ID) &&  Book.Genre.Equals(b.Genre))
+               {
+                    str += b.Author + " - " + b.Title + "\n";      
+               }
+            }
+            Suggestion_Books.Text = "Вам может понравится:\n" + str;
+
         }
         private void cover1_Click(object sender, EventArgs e)
         {
-            coverClick(cover1);
+            Checked_Book = ListOfBooks[0];
         }
         private void cover2_Click(object sender, EventArgs e)
         {
-            coverClick(cover2);
+            Checked_Book = ListOfBooks[1];
         }
 
         private void cover3_Click(object sender, EventArgs e)
         {
-            coverClick(cover3);
+            Checked_Book = ListOfBooks[2];
         }
 
         private void cover4_Click(object sender, EventArgs e)
         {
-            coverClick(cover4);
+            Checked_Book = ListOfBooks[3];
         }
 
         private void cover5_Click(object sender, EventArgs e)
         {
-            coverClick(cover5);
+            Checked_Book = ListOfBooks[4];
         }
 
         private void cover6_Click(object sender, EventArgs e)
         {
-            coverClick(cover6);
+            Checked_Book = ListOfBooks[5];
         }
 
         private void cover7_Click(object sender, EventArgs e)
         {
-            coverClick(cover7);
+            Checked_Book = ListOfBooks[6];
         }
 
         private void cover8_Click(object sender, EventArgs e)
         {
-            coverClick(cover8);
+            Checked_Book = ListOfBooks[7];
         }
 
         private void cover9_Click(object sender, EventArgs e)
         {
-            coverClick(cover9);
+            Checked_Book = ListOfBooks[8];
         }
+
         public void FilterClick()//метод для осуществления сортировок принажатии на меню
         {
-            if(filter.Items.Contains("алфавиту по авторам"))
+            if (filter.Items.Contains("алфавиту по авторам")) //сортировка по алфавиту по авторам
             {
-                //сортировка по алфавиту по авторам
+               
             }
-            else if (filter.Items.Contains("алфавиту по названиям"))
+            else if (filter.Items.Contains("алфавиту по названиям")) //сортировка по алфавиту по названиям
             {
-                //сортировка по алфавиту по названиям
+                
             }
-            else if (filter.Items.Contains("только свободные книги"))
+            else if (filter.Items.Contains("только свободные книги"))//показать только свободные
             {
-                //показать только свободные
+               
             }
+        }
+        public void Set_book_status(eBookCond eBook)
+        {
+            switch(eBook)
+            {
+                case eBookCond.available: label_BOOK_status.Text = "Книга доступна"; break;
+                case eBookCond.busy: label_BOOK_status.Text = "Книга находится у читателя"; break;
+                case eBookCond.comingsoon: label_BOOK_status.Text = "Книга скоро поступит в бибилиотеку"; break;
+                case eBookCond.unavailable: label_BOOK_status.Text = "Книга более не доступна"; break;
+            }
+        }
+
+        private void cover1_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover1);
+        }
+
+        private void cover2_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover2);
+        }
+
+        private void cover3_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover3);
+        }
+
+        private void cover4_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover4);
+        }
+
+        private void cover5_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover5);
+        }
+
+        private void cover6_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover6);
+        }
+
+        private void cover7_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover7);
+        }
+
+        private void cover8_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover8);
+        }
+
+        private void cover9_MouseEnter(object sender, EventArgs e)
+        {
+            coverMouseEnter(cover9);
         }
     }
 }
