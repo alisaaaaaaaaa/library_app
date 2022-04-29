@@ -48,6 +48,7 @@ namespace library_app
                         string Description = myReader["Description"].ToString();
                         string Genre = myReader["Genre"].ToString();
                         Image image = Image.FromStream(myReader.GetStream(5));
+                        //добавилось поле TakeNum(сколько раз книгу брали), нужно добавить его сюда
                         Book book = new Book(Id, Book_Title, Author, image, Description, Genre, eBookCond.available);
                         ListOfBooks.Add(book);
                         switch (Id)
@@ -107,6 +108,9 @@ namespace library_app
                     ListOfBooks[index].BookCond = eBookCond.busy;
                     Set_book_status(ListOfBooks[index].BookCond);
                     MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                    Checked_Book.TakeNum += 1;
+                    string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
+                    //записать дату в бд
                 }
                 else
                 {
@@ -123,8 +127,9 @@ namespace library_app
                                     Set_book_status(ListOfBooks[index].BookCond);
                                     readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
                                     MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
-                                    string takingdate =  DateTime.Now.ToLongTimeString();//дата взятия
-                                    //записать дату в бд
+                                    Checked_Book.TakeNum += 1;
+                                    string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
+                                                                                      //записать дату в бд
                                     break;
                                 }
                                 else 
@@ -149,8 +154,11 @@ namespace library_app
                             ListOfBooks[index].BookCond = eBookCond.busy;
                             Set_book_status(ListOfBooks[index].BookCond);
                             MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                            Checked_Book.TakeNum += 1;
+                            string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
+                                                                              //записать дату в бд
                         }
-                       else
+                        else
                        {
                             MessageBox.Show("Книга недоступна");
                        }
@@ -316,19 +324,39 @@ namespace library_app
                 }
             }
         }
-
+        private Book GetBookByBusyBooks(ListViewItem item)//вспомогательный метод для того, чтобы связать книгу в busybooks с экземпляром книги
+        {
+            foreach (Book Book in ListOfBooks)
+            {
+                if (item.Selected)
+                {
+                    return Book;
+                }
+            }
+            return null;
+        }
+        private void busybooksItemClick(ListViewItem item)//метод для того, чтобы при нажатии посередине появлялась брошюра
+        {
+            var Book = GetBookByBusyBooks(item);
+            bigcover2.Image = Book.Cover;
+            description2.Text = Book.Description;
+        }
         private void busybooks_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            //сделать обложку, описание, вывести из бд номер читательского билета и дату
+            foreach(ListViewItem i in busybooks.Items)
+            {
+                if(GetBookByBusyBooks(i)!=null)
+                {
+                    busybooksItemClick(i);
+                }
+            }
         }
-
-        
-        //private void Statistic(List<Book> ListOfBooks)
-        //{
-        //    foreach (Book book in ListOfBooks)
-        //    {
-        //        statDate.Rows.Add(book.Title,//время использования, счет раз)
-        //    }
-        //}
+        private void Statistic(List<Book> ListOfBooks)
+        {
+            foreach (Book book in ListOfBooks)
+            {
+                statDate.Rows.Add(book.Title,"", book.TakeNum);//не сделала количество дней
+            }
+        }
     }
 }

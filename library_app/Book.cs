@@ -25,7 +25,8 @@ namespace library_app
         public eBookCond BookCond;
         public PictureBox pBoxBookShelf;
         public RichTextBox rTBoxBookShelf;
-        public Book(int ID,string Title, string Author, Image Cover, string Description, string Genre, eBookCond BookCond)
+        public int TakeNum;
+        public Book(int ID,string Title, string Author, Image Cover, string Description, string Genre, eBookCond BookCond,int TakeNum)
         {
             this.ID = ID;
             this.Title = Title;
@@ -34,6 +35,7 @@ namespace library_app
             this.Description = Description;
             this.Genre = Genre;
             this.BookCond = BookCond;
+            this.TakeNum = TakeNum;
         }
     }
 }
