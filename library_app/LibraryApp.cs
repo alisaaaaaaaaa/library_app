@@ -24,6 +24,7 @@ namespace library_app
         {
             InitializeComponent();
             this.WindowState = FormWindowState.Maximized;
+            BookList(ListOfBooks);
             try
             {
                 sqlConnection.Open();
@@ -62,7 +63,6 @@ namespace library_app
                             case 8: Bookshelf(book, cover9, title9); coverMouseEnter(cover9); break;
                         }
                         Id++;
-                        FilterClick();
                     }
                 }
             }
@@ -123,6 +123,8 @@ namespace library_app
                                     Set_book_status(ListOfBooks[index].BookCond);
                                     readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
                                     MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
+                                    string takingdate =  DateTime.Now.ToLongTimeString();//дата взятия
+                                    //записать дату в бд
                                     break;
                                 }
                                 else 
@@ -224,20 +226,19 @@ namespace library_app
         {
             Checked_Book = ListOfBooks[8];
         }
-
-        public void FilterClick()//метод для осуществления сортировок принажатии на меню
+        private void filter_TextChanged(object sender, EventArgs e)
         {
-            if (filter.Items.Contains("алфавиту по авторам")) //сортировка по алфавиту по авторам
+            if (filter.Items.Equals("алфавиту по авторам")) //сортировка по алфавиту по авторам
             {
-               
+                MessageBox.Show("К сожалению, данная функция пока не доступна. Наши разработчики уже работают над этим!");
             }
             else if (filter.Items.Contains("алфавиту по названиям")) //сортировка по алфавиту по названиям
             {
-                
+                MessageBox.Show("К сожалению, данная функция пока не доступна. Наши разработчики уже работают над этим!");
             }
             else if (filter.Items.Contains("только свободные книги"))//показать только свободные
             {
-               
+
             }
         }
         public void Set_book_status(eBookCond eBook)
@@ -295,5 +296,39 @@ namespace library_app
         {
             coverMouseEnter(cover9);
         }
+
+        private void passbutton_Click(object sender, EventArgs e)
+        {
+                DialogResult result = MessageBox.Show("Пользователь действительно хочет сдать книгу?", "", MessageBoxButtons.YesNo, MessageBoxIcon.None, MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.Yes)
+                {
+                    DateAskform askform = new DateAskform();
+                    askform.ShowDialog();
+                }
+        }
+        private void BookList(List<Book> ListOfBooks)//метод для создания списка занятых книг
+        {
+            foreach (Book book in ListOfBooks)
+            {
+                if (book.BookCond == eBookCond.busy)
+                {
+                    busybooks.Items.Add(book.Title);
+                }
+            }
+        }
+
+        private void busybooks_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            //сделать обложку, описание, вывести из бд номер читательского билета и дату
+        }
+
+        
+        //private void Statistic(List<Book> ListOfBooks)
+        //{
+        //    foreach (Book book in ListOfBooks)
+        //    {
+        //        statDate.Rows.Add(book.Title,//время использования, счет раз)
+        //    }
+        //}
     }
 }
