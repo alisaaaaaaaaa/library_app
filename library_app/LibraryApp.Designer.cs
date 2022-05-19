@@ -30,8 +30,6 @@ namespace library_app
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("lalalala");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("dfghj");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LibraryApp));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.lending = new System.Windows.Forms.TabPage();
@@ -829,9 +827,6 @@ namespace library_app
             // 
             this.busybooks.BackColor = System.Drawing.Color.BurlyWood;
             this.busybooks.HideSelection = false;
-            this.busybooks.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
             this.busybooks.Location = new System.Drawing.Point(25, 31);
             this.busybooks.MultiSelect = false;
             this.busybooks.Name = "busybooks";
@@ -1005,7 +1000,7 @@ namespace library_app
         private System.Windows.Forms.Label Label_of_book_status;
         private System.Windows.Forms.Label label_BOOK_status;
         private System.Windows.Forms.RichTextBox Suggestion_Books;
-        private System.Windows.Forms.ListView busybooks;
+        public System.Windows.Forms.ListView busybooks;
         private System.Windows.Forms.FlowLayoutPanel brochure2;
         private System.Windows.Forms.PictureBox bigcover2;
         private System.Windows.Forms.RichTextBox description2;

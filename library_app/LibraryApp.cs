@@ -14,8 +14,7 @@ namespace library_app
 {
     public partial class LibraryApp : Form
     {
-
-        List<Book> ListOfBooks = new List<Book>();
+        public List<Book> ListOfBooks = new List<Book>();
         List<Reader> readers = new List<Reader>();
         Book Checked_Book;
 
@@ -108,7 +107,7 @@ namespace library_app
                     ListOfBooks[index].BookCond = eBookCond.busy;
                     Set_book_status(ListOfBooks[index].BookCond);
                     MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
-                    Checked_Book.TakeNum += 1;
+                    //Checked_Book.TakeNum += 1;
                     string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
                     //записать дату в бд
                 }
@@ -127,7 +126,7 @@ namespace library_app
                                     Set_book_status(ListOfBooks[index].BookCond);
                                     readers.Add(new Reader(numbertextbox.Text, Checked_Book, Convert.ToInt32(timetextbox.Text)));
                                     MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
-                                    Checked_Book.TakeNum += 1;
+                                    //Checked_Book.TakeNum += 1;
                                     string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
                                                                                       //записать дату в бд
                                     break;
@@ -154,7 +153,7 @@ namespace library_app
                             ListOfBooks[index].BookCond = eBookCond.busy;
                             Set_book_status(ListOfBooks[index].BookCond);
                             MessageBox.Show($"Вы взяли {Checked_Book.Title + " " + Checked_Book.Author}");
-                            Checked_Book.TakeNum += 1;
+                            //Checked_Book.TakeNum += 1;
                             string takedate = DateTime.Now.ToLongTimeString();//дата взятия книги
                                                                               //записать дату в бд
                         }
@@ -355,7 +354,7 @@ namespace library_app
         {
             foreach (Book book in ListOfBooks)
             {
-                statDate.Rows.Add(book.Title,"", book.TakeNum);//не сделала количество дней
+                statDate.Rows.Add(book.Title, book.TakeDays, book.TakeNum);
             }
         }
     }

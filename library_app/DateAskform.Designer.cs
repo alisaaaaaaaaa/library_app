@@ -38,25 +38,24 @@ namespace library_app
             // 
             this.txtlab.AutoSize = true;
             this.txtlab.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.txtlab.Location = new System.Drawing.Point(33, 36);
+            this.txtlab.Location = new System.Drawing.Point(2, 47);
             this.txtlab.Name = "txtlab";
-            this.txtlab.Size = new System.Drawing.Size(259, 20);
+            this.txtlab.Size = new System.Drawing.Size(381, 20);
             this.txtlab.TabIndex = 0;
-            this.txtlab.Text = "Введите дату возвратата книги:";
+            this.txtlab.Text = "Введите количество дней использования книги:";
             // 
             // datetb
             // 
             this.datetb.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.datetb.Location = new System.Drawing.Point(113, 81);
-            this.datetb.Mask = "00/00/0000";
+            this.datetb.Location = new System.Drawing.Point(148, 80);
+            this.datetb.Mask = "00";
             this.datetb.Name = "datetb";
             this.datetb.Size = new System.Drawing.Size(91, 26);
             this.datetb.TabIndex = 1;
-            this.datetb.ValidatingType = typeof(System.DateTime);
             // 
             // okbutton
             // 
-            this.okbutton.Location = new System.Drawing.Point(113, 131);
+            this.okbutton.Location = new System.Drawing.Point(148, 129);
             this.okbutton.Name = "okbutton";
             this.okbutton.Size = new System.Drawing.Size(91, 27);
             this.okbutton.TabIndex = 2;
@@ -68,12 +67,12 @@ namespace library_app
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(322, 199);
+            this.ClientSize = new System.Drawing.Size(384, 199);
             this.Controls.Add(this.okbutton);
             this.Controls.Add(this.datetb);
             this.Controls.Add(this.txtlab);
-            this.MaximumSize = new System.Drawing.Size(338, 238);
-            this.MinimumSize = new System.Drawing.Size(338, 238);
+            this.MaximumSize = new System.Drawing.Size(400, 238);
+            this.MinimumSize = new System.Drawing.Size(400, 238);
             this.Name = "DateAskform";
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -14,7 +14,7 @@ public enum eBookCond
  }
 namespace library_app
 {
-    class Book
+   public class Book
     {
         public int ID;
         public string Title;
@@ -25,8 +25,9 @@ namespace library_app
         public eBookCond BookCond;
         public PictureBox pBoxBookShelf;
         public RichTextBox rTBoxBookShelf;
-        public int TakeNum;
-        public Book(int ID,string Title, string Author, Image Cover, string Description, string Genre, eBookCond BookCond,int TakeNum)
+        public int TakeNum;//сколько раз взяли кингу
+        public int TakeDays;//сколько дней книга была у читателя
+        public Book(int ID,string Title, string Author, Image Cover, string Description, string Genre, eBookCond BookCond,int TakeNum, int TakeDays)
         {
             this.ID = ID;
             this.Title = Title;
@@ -36,6 +37,7 @@ namespace library_app
             this.Genre = Genre;
             this.BookCond = BookCond;
             this.TakeNum = TakeNum;
+            this.TakeDays = TakeDays;
         }
     }
 }
